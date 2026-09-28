@@ -1,0 +1,1 @@
+nmap -f --mtu 16 -D RND:5 --source-port 53 -T2 --data-length 20 -sS <target>

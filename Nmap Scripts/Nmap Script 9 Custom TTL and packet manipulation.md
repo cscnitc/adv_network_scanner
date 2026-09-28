@@ -1,0 +1,1 @@
+nmap --ttl 64 <target>       # blend in with normal OS TTLs
