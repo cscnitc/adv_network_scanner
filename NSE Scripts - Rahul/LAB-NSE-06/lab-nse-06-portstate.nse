@@ -71,7 +71,7 @@ FAILURE CONDITION:
     window.
 ]]
 
-author = "Team Security Lab"
+author = "CSC NitC"
 license = "Same as Nmap"
 categories = {"safe", "discovery"}
 

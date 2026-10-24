@@ -21,12 +21,17 @@ TRAFFIC:
     list, run as three separate invocations.
 
 FIREWALL:
-    Expected: ALLOW, same outcome as baseline for each port -- PENDING
-              confirmation of pfSense's fragment reassembly/scrub
-              setting (see Open TODOs below).
-    Reason: Fragmentation is a wire-level presentation change; filtering
-            is based on port/protocol, which is unaffected by it unless
-            pfSense evaluates fragments before reassembly.
+    Expected: IF [scrub/reassembly enabled] Same allow/deny outcome as
+              baseline — pfSense reassembles before filtering, so
+              fragmentation is invisible to the ruleset.
+              [IF disabled/unknown] Possible divergence from baseline
+              — pfSense may evaluate the first fragment alone, which
+              per the Nmap doc may not contain the full TCP header.
+    Reason: pfSense filters on port/protocol/flags, which live in the
+            TCP header -- a tiny first fragment may not carry the whole
+            header, so the outcome depends on whether scrub reassembles
+            before filtering. Resolves once the setting is confirmed
+            (see Open TODOs).
 
 SNORT:
     Expected: ALERT on all three variants; frag8 is the likeliest to
@@ -106,9 +111,9 @@ decision, **unless** pfSense evaluates the first fragment alone before
 reassembly, in which case a divergence from baseline is possible if
 that first fragment doesn't contain the full TCP header. This is
 exactly the scenario described in Nmap's own documentation on
-fragmentation. Confirm pfSense's scrub/reassembly setting with your
-lead before treating any divergence as a firewall-level finding rather
-than expected behavior (see Open TODOs).
+fragmentation. Confirm pfSense's scrub/reassembly setting
+before treating any divergence as a firewall-level finding rather
+than expected behavior.
 
 ## What Snort rule should detect it?
 
@@ -133,16 +138,12 @@ incomplete reassembly, especially on frag8.
 
 ## Firewall vs IDS vs IPS vs network visibility
 
-Same four-way split used in LAB-NSE-06, applied here:
-
 - **Firewall enforcement** — did pfSense allow or drop each
   fragmented probe, and does that match the baseline?
 - **IDS detection** — did Snort/Suricata alert, independent of
   whether the firewall let the packet through?
 - **IPS prevention** — if Snort/Suricata are deployed inline, did
-  they additionally block the fragmented traffic? Confirm deployment
-  mode with your lead before interpreting results (passive IDS-only
-  can never "fail to prevent").
+  they additionally block the fragmented traffic? 
 - **Network visibility** — did Zeek log the connection regardless of
   the other three outcomes?
 
@@ -162,10 +163,10 @@ See DATA TO COLLECT in the template above.
 
 ---
 
-## Open TODOs before trusting results
+## Things to Make Note of
 
-1. **Confirm pfSense's fragment reassembly/scrub setting** with your
-   lead. This determines the FIREWALL hypothesis above and whether any
+1. **Confirm pfSense's fragment reassembly/scrub setting**
+   This determines the FIREWALL hypothesis above and whether any
    observed divergence from baseline is expected or a real finding.
 2. **Confirm whether Snort/Suricata are deployed passively (IDS-only)
    or inline (IPS)** in this lab, so the IPS-prevention column in the
@@ -224,7 +225,7 @@ JSON: {"experiment_id":"LAB-NSE-08","variant":"frag8","stage":"fragmentation_res
 | 80   |                 |             |               |                     |                    |                        |                                  |                  |       |
 | 443  |                 |             |               |                     |                    |                        |                                  |                  |       |
 
-**Detection latency (first alert − probe sent):**
+**Detection latency:**
 - Baseline: ___
 - frag8: ___
 - frag16: ___

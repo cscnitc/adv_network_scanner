@@ -89,7 +89,7 @@ FAILURE CONDITION:
     fragmentation lets reconnaissance traffic through undetected.
 ]]
 
-author = "Team Security Lab"
+author = "CSC NitC
 license = "Same as Nmap"
 categories = {"safe", "discovery"}
 

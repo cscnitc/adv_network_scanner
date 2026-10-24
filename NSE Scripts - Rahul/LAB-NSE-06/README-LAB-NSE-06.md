@@ -141,7 +141,7 @@ answer:
 - **IPS prevention** — if Snort/Suricata are deployed inline rather
   than passively, did they additionally *block* the packet? This is
   distinct from alerting and only applies if your lab runs them
-  in-line. **Confirm with your lab lead which mode Snort/Suricata are
+  in-line. **Confirm with the lab which mode Snort/Suricata are
   running in before interpreting results** — a passive/IDS-only
   deployment can never "fail to prevent," since prevention isn't its
   job.
