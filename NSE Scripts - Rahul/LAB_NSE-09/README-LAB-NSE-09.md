@@ -1,10 +1,7 @@
 # LAB-NSE-09: Timing-Threshold Evasion (Scan-Delay Resilience)
 
-## Threshold to request from your lead
-
-You are offense; your lead owns Snort/Suricata config. Rather than
-guessing or reverse-engineering their defaults, hand them this exact,
-identical threshold to implement in both tools before you run
+## Threshold to implement in the lab
+threshold to implement in both tools before you run
 anything. Using the same `count`/`seconds` in both makes the two
 sensors directly comparable, and turns the breakpoint into computable
 math instead of a guess.
@@ -39,10 +36,8 @@ max_delay_ms = (seconds * 1000) / (count - 1)
 Below ~15000ms delay: alert expected. At or above it: no alert
 expected, for a 6-probe scan (see TRAFFIC below for why 6 ports).
 
-**Ask your lead two more things** before running:
-1. Confirm the rules above are loaded and active (not just syntax-
-   checked) in both Snort and Suricata.
-2. Whether Snort's built-in `sfPortscan`/`port_scan` preprocessor is
+Confirm before running:
+Whether Snort's built-in `sfPortscan`/`port_scan` preprocessor is
    also enabled alongside the declared rule. If so, it runs its own
    separate threshold and could alert independently -- ask them to
    either disable it for a clean test, or note its config so you can
@@ -78,7 +73,7 @@ FIREWALL:
     Expected: ALLOW, same outcome at every sweep point.
     Reason: pfSense filters on port/protocol, not inter-probe timing,
             unless an explicit rate-limiting rule is configured
-            (confirm with lead).
+            (confirm with lab).
 
 SNORT:
     Expected: ALERT (SID 1000109) when delay < ~15000ms; no alert at
@@ -154,7 +149,7 @@ Inter-probe timing isn't part of pfSense's per-packet port/protocol
 filtering decision in this lab, so the expected outcome is identical
 allow/deny behavior at every sweep point -- unless pfSense has an
 explicit rate-limiting rule configured, which would need to be
-confirmed with your lead before interpreting any divergence.
+confirmed with your lab before interpreting any divergence.
 
 ## What Snort rule should detect it?
 
@@ -185,7 +180,7 @@ Same four-way split used in LAB-NSE-06/08, applied here:
   and at what delay did that stop happening?
 - **IPS prevention** — if Snort/Suricata are deployed inline, did
   they additionally block traffic below the breakpoint? Confirm
-  deployment mode with your lead before interpreting results.
+  deployment mode with your lab before interpreting results.
 - **Network visibility** — did Zeek log the connection regardless of
   delay or alert outcome?
 
@@ -202,10 +197,9 @@ See DATA TO COLLECT in the template above.
 
 ---
 
-## Open TODOs before running
+## Things to make note of
 
-1. **Hand your lead the Suricata and Snort rule text above** and
-   confirm both are loaded and active before starting the sweep.
+1. Confirm both  Snort and Surricata are loaded with the ruleset and active before starting the sweep.
 2. **Confirm whether Snort's built-in portscan preprocessor is also
    enabled** alongside the declared rule, and if so, get its
    threshold noted so its alerts can be recorded separately.
@@ -243,7 +237,7 @@ JSON: {"experiment_id":"LAB-NSE-09","variant":"d15000","stage":"timing_resilienc
    sweep, saves `-oA` output per point under `results/LAB-NSE-09/`,
    and prints each point's time window for log correlation
 3. `README-LAB-NSE-09.md` — this file, including the declared
-   threshold rules to hand your lead
+   threshold rules 
 4. Example output — see above
 5. Expected firewall / Snort / Suricata / Zeek behavior — see sections
    above
@@ -255,7 +249,6 @@ JSON: {"experiment_id":"LAB-NSE-09","variant":"d15000","stage":"timing_resilienc
 
 **Snort/Suricata deployment mode for this run:** IDS-only (passive) / Inline (IPS) — confirm and record before filling the table.
 
-**Declared rules confirmed live by lead:** Yes / No — confirm before running.
 
 | Delay (ms) | Firewall inference | Snort alert (SID 1000109)? | Suricata alert (SID 1000009)? | Zeek visibility | Notes |
 |------------|---------------------|------------------------------|----------------------------------|------------------|-------|
@@ -274,4 +267,4 @@ JSON: {"experiment_id":"LAB-NSE-09","variant":"d15000","stage":"timing_resilienc
 
 **Conclusion:** (does the declared threshold behave as the math
 predicts; do Snort and Suricata agree; any divergence worth flagging
-to the lead as a config issue)
+as a config issue)

@@ -94,7 +94,7 @@ FAILURE CONDITION:
     verification failures, not just detection gaps.
 ]]
 
-author = "Team Security Lab"
+author = "CSC NitC"
 license = "Same as Nmap"
 categories = {"safe", "discovery"}
 
